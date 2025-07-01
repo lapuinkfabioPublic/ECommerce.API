@@ -45,7 +45,7 @@ namespace ECommerce.API.Controllers
             return Ok(usuario);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             _repository.Delete(id);//200 do HTTP
