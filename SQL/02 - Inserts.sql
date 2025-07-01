@@ -1,3 +1,4 @@
+// Script dados Fictícios Fabio Leandro Lapuinka 
 INSERT INTO [dbo].[Usuarios] (Nome, Email, Sexo, RG, CPF, NomeMae, SituacaoCadastro, DataCadastro) VALUES
 ('Ana Tereza de A. Vasques', 'ana.tereza@gmail.com', 'F', '2.523.322', '478.560.690-82', 'Maria Tereza de A. Vasques', 'A', '2021-01-01 00:00:00'),
 ('José Mariano Gomes', 'jose.mariano@gmail.com', 'M', '3.152.321', '604.986.340-78', 'Antônia Mariano Gomes', 'A', '2021-01-01 00:00:00'),
