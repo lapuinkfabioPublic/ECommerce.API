@@ -31,8 +31,9 @@ namespace ECommerce.API.Repositories
         {
             //até 7 objetos diferentes...
             List<Usuario> usuarios = new List<Usuario>();
+
             _connection.Query<Usuario, Contato, EnderecoEntrega, Usuario>(
-                                                                @"select 
+                                                                @"select  
                                                                     u.[Id], u.[Nome], u.[Email], u.[Sexo], u.[RG], u.[CPF],
                                                                     u.[NomeMae], u.[SituacaoCadastro], u.[DataCadastro] ,
                                                                     c.[Id], c.[UsuarioId], c.[Telefone], c.[Celular],
@@ -69,7 +70,8 @@ namespace ECommerce.API.Repositories
                                                                 }
                                                                  ,new { Id = id }
                                                                );
-            return usuarios.Take(1).SingleOrDefault();
+            return usuarios.SingleOrDefault();
+
 
             
 
