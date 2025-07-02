@@ -1,8 +1,11 @@
-﻿namespace ECommerce.API.Models
+﻿using Dapper.Contrib.Extensions;
+
+namespace ECommerce.API.Models
 {
+    [Table("Usuarios")]
     public class Usuario
     {
-
+        [Key]
         public int Id { get; set; }
         public string Nome { get; set; }
         public string Email { get; set; }
