@@ -20,10 +20,10 @@
         public DateTimeOffset DataCadastro { get; set; }
 
         public Contato? contato { get; set; } /*1:1*/
+                            
+        public ICollection<EnderecoEntrega>? Enderecos { get; set; }/*1:N*/
 
-        public ICollection<EnderecoEntrega>? Enderecos { get; set; }
-
-        public ICollection<Departamento>? Departamentos { get; set; }
+        public ICollection<Departamento>? Departamentos { get; set; }/*N:N*/
 
 
     }

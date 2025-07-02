@@ -32,29 +32,40 @@ namespace ECommerce.API.Repositories
             //até 7 objetos diferentes...
             List<Usuario> usuarios = new List<Usuario>();
 
-            _connection.Query<Usuario, Contato, EnderecoEntrega, Usuario>(
-                                                                @"select  
+            _connection.Query<Usuario, Contato, EnderecoEntrega, Departamento, Usuario>(
+                                                                @" select  
+
                                                                     u.[Id], u.[Nome], u.[Email], u.[Sexo], u.[RG], u.[CPF],
                                                                     u.[NomeMae], u.[SituacaoCadastro], u.[DataCadastro] ,
                                                                     c.[Id], c.[UsuarioId], c.[Telefone], c.[Celular],
-	                                                                e.[Id], e.[UsuarioId], e.[NomeEndereco], e.[CEP], 
-	                                                                e.[Estado], e.[Cidade], e.[Bairro], 
-	                                                                e.[Endereco], e.[Numero], e.[Complemento]
-	                                                                from Usuarios u 
-	                                                                left outer join Contatos c
-	                                                                on u.Id = c.UsuarioId
-	                                                                left outer join EnderecosEntrega e
-	                                                                on e.UsuarioId = u.Id
+                                                                    e.[Id], e.[UsuarioId], e.[NomeEndereco], e.[CEP], 
+                                                                    e.[Estado], e.[Cidade], e.[Bairro], 
+                                                                    e.[Endereco], e.[Numero], e.[Complemento]
+                                                                    ,d.[Id], d.[Nome]
+
+                                                                    from Usuarios u 
+                                                                    left outer join Contatos c
+                                                                    on u.Id = c.UsuarioId
+                                                                    left outer join EnderecosEntrega e
+                                                                    on e.UsuarioId = u.Id
+                                                                    left outer join UsuariosDepartamentos ud
+                                                                    on ud.UsuarioId = u.id
+                                                                    left outer join Departamentos d
+                                                                    on d.Id = ud.DepartamentoId
+
+
 
                                                                     where u.Id = @Id
 
-                                                               ", (usuario, contato, enderecosEntrega) =>
+                                                               ", (usuario, contato, enderecosEntrega, departamento) =>
                                                                 {
                                                                     var usuJaAdicionado = usuarios.SingleOrDefault(a => a.Id == usuario.Id);
 
+                                                                    //Verificação do usuário
                                                                     if (usuJaAdicionado == null)
                                                                     {
                                                                         usuario.Enderecos = new List<EnderecoEntrega>();
+                                                                        usuario.Departamentos = new List<Departamento>();
                                                                         usuario.contato = contato;
                                                                         usuarios.Add(usuario);
                                                                     }
@@ -63,7 +74,13 @@ namespace ECommerce.API.Repositories
                                                                         usuario = usuJaAdicionado;
                                                                     }
 
-                                                                    usuario.Enderecos.Add(enderecosEntrega);
+                                                                    //Verificação do endereço
+                                                                    if(enderecosEntrega != null && usuario.Enderecos.SingleOrDefault(a=>a.Id==enderecosEntrega.Id) == null)
+                                                                        usuario.Enderecos.Add(enderecosEntrega);
+
+                                                                    //Verificação do departamento
+                                                                    if (departamento!= null && usuario.Departamentos.SingleOrDefault(a => a.Id == departamento.Id) == null)
+                                                                        usuario.Departamentos.Add(departamento);
 
                                                                     return usuario; //Precisar retornar qq coisa, pode até ser um NULL
 
