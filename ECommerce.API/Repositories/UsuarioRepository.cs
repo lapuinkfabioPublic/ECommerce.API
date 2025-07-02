@@ -112,6 +112,36 @@ namespace ECommerce.API.Repositories
                 if (usuario.contato == null)
                     return;
 
+                if (usuario.Enderecos != null && usuario.Enderecos.Count > 0)
+                {
+                    foreach (var enderecoEntrega in usuario.Enderecos)
+                    {
+                        string sqlEndereco = @"INSERT INTO [dbo].[EnderecosEntrega]
+                                               ([UsuarioId]
+                                               ,[NomeEndereco]
+                                               ,[CEP]
+                                               ,[Estado]
+                                               ,[Cidade]
+                                               ,[Bairro]
+                                               ,[Endereco]
+                                               ,[Numero]
+                                               ,[Complemento])
+                                         VALUES
+                                               (@UsuarioId
+                                               ,@NomeEndereco
+                                               ,@CEP
+                                               ,@Estado
+                                               ,@Cidade
+                                               ,@Bairro
+                                               ,@Endereco
+                                               ,@Numero
+                                               ,@Complemento);select  cast( scope_identity() as INT)";
+                        enderecoEntrega.UsuarioId = usuario.Id;
+                        enderecoEntrega.Id = _connection.Query<int>(sqlEndereco, enderecoEntrega, transaction).Single();
+
+                    }
+                
+                }
 
                 usuario.contato.UsuarioId = usuario.Id;
                 string sqlContato = @" INSERT INTO [dbo].[Contatos]  ([UsuarioId],[Telefone],[Celular]) VALUES (@UsuarioId, @Telefone,  @Celular);
@@ -171,6 +201,43 @@ namespace ECommerce.API.Repositories
                 if (usuario.contato == null)
                     return;
 
+
+                if (usuario.Enderecos != null && usuario.Enderecos.Count > 0)
+                {
+                    string sqlDeletarEnderecos = "Delete from [dbo].[EnderecosEntrega] where UsuarioId = @Id";
+                    _connection.Execute(sqlDeletarEnderecos, usuario, transaction);
+
+                    if (usuario.Enderecos != null && usuario.Enderecos.Count > 0)
+                    {
+                        foreach (var enderecoEntrega in usuario.Enderecos)
+                        {
+                            string sqlEndereco = @"INSERT INTO [dbo].[EnderecosEntrega]
+                                               ([UsuarioId]
+                                               ,[NomeEndereco]
+                                               ,[CEP]
+                                               ,[Estado]
+                                               ,[Cidade]
+                                               ,[Bairro]
+                                               ,[Endereco]
+                                               ,[Numero]
+                                               ,[Complemento])
+                                         VALUES
+                                               (@UsuarioId
+                                               ,@NomeEndereco
+                                               ,@CEP
+                                               ,@Estado
+                                               ,@Cidade
+                                               ,@Bairro
+                                               ,@Endereco
+                                               ,@Numero
+                                               ,@Complemento);select  cast( scope_identity() as INT)";
+                            enderecoEntrega.UsuarioId = usuario.Id;
+                            enderecoEntrega.Id = _connection.Query<int>(sqlEndereco, enderecoEntrega, transaction).Single();
+
+                        }
+
+                    }
+                }
 
                 string sqlContato = @" 
                                     UPDATE [dbo].[Contatos]
