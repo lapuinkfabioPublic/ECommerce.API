@@ -56,7 +56,13 @@ namespace ECommerce.API.Repositories
 
         public void Insert(Usuario usuario)
         {
-            string sql = @"
+            _connection.Open();
+            var transaction = _connection.BeginTransaction();
+
+            try
+            {
+                #region Usuarios
+                string sql = @"
                             INSERT INTO [dbo].[Usuarios]
                                        ([Nome]
                                        ,[Email]
@@ -77,10 +83,41 @@ namespace ECommerce.API.Repositories
                                        ,@DataCadastro);
                             select  cast( scope_identity() as INT);
                             ";
+                usuario.Id = _connection.Query<int>(sql, usuario, transaction).Single();
+                #endregion
 
-            //Passado por Referência
-            usuario.Id = _connection.Query<int>(sql, usuario).Single();
-     
+                if (usuario.contato == null)
+                    return;
+
+
+                usuario.contato.UsuarioId = usuario.Id;
+                string sqlContato = @" INSERT INTO [dbo].[Contatos]  ([UsuarioId],[Telefone],[Celular]) VALUES (@UsuarioId, @Telefone,  @Celular);
+                                   select  cast( scope_identity() as INT);";
+
+                usuario.contato.Id = _connection.Query<int>(sqlContato, usuario.contato, transaction).Single();
+
+                transaction.Commit();
+
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    transaction.Rollback();
+                }
+                catch (SystemException ex2) {
+                    //Retornar para UsuarioController alguma mensagem
+                    throw ex2;
+
+                }
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+
+
         }
 
         public void Update(Usuario usuario)
