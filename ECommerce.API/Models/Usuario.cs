@@ -22,10 +22,13 @@ namespace ECommerce.API.Models
 
         public DateTimeOffset DataCadastro { get; set; }
 
+        [Write(false)]
         public Contato? contato { get; set; } /*1:1*/
-                            
+        
+        [Write(false)]
         public ICollection<EnderecoEntrega>? Enderecos { get; set; }/*1:N*/
-
+        
+        [Write(false)]
         public ICollection<Departamento>? Departamentos { get; set; }/*N:N*/
 
 
