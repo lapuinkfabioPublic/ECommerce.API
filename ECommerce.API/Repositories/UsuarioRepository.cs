@@ -23,35 +23,56 @@ namespace ECommerce.API.Repositories
 
         public List<Usuario> Get()
         {
-
             return _connection.Query<Usuario>("select [Id], [Nome], [Email], [Sexo], [RG], [CPF], [NomeMae], [SituacaoCadastro], [DataCadastro] from usuarios (nolock)").ToList();
+
         }
 
         public Usuario Get(int id)
         {
             //até 7 objetos diferentes...
-            return _connection.Query<Usuario,Contato, Usuario>(@"select 
+            List<Usuario> usuarios = new List<Usuario>();
+            _connection.Query<Usuario, Contato, EnderecoEntrega, Usuario>(
+                                                                @"select 
+                                                                    u.[Id], u.[Nome], u.[Email], u.[Sexo], u.[RG], u.[CPF],
+                                                                    u.[NomeMae], u.[SituacaoCadastro], u.[DataCadastro] ,
+                                                                    c.[Id], c.[UsuarioId], c.[Telefone], c.[Celular],
+	                                                                e.[Id], e.[UsuarioId], e.[NomeEndereco], e.[CEP], 
+	                                                                e.[Estado], e.[Cidade], e.[Bairro], 
+	                                                                e.[Endereco], e.[Numero], e.[Complemento]
+	                                                                from Usuarios u 
+	                                                                left outer join Contatos c
+	                                                                on u.Id = c.UsuarioId
+	                                                                left outer join EnderecosEntrega e
+	                                                                on e.UsuarioId = u.Id
 
-                                                                 u.[Id], u.[Nome], u.[Email], u.[Sexo], u.[RG], u.[CPF],
-                                                                 u.[NomeMae], u.[SituacaoCadastro], u.[DataCadastro] ,
-                                                                 c.[Id], c.[UsuarioId], c.[Telefone], c.[Celular]
+                                                                    where u.Id = @Id
 
-	                                                             from Usuarios u 
-	                                                             left outer join Contatos c
-	                                                             on u.Id = c.UsuarioId
-	                                                             where u.Id = @Id
-
-                                                               ", (usuario,contato) =>
+                                                               ", (usuario, contato, enderecosEntrega) =>
                                                                 {
-                                                                    usuario.contato = contato;
-                                                                    return usuario;
+                                                                    var usuJaAdicionado = usuarios.SingleOrDefault(a => a.Id == usuario.Id);
+
+                                                                    if (usuJaAdicionado == null)
+                                                                    {
+                                                                        usuario.Enderecos = new List<EnderecoEntrega>();
+                                                                        usuario.contato = contato;
+                                                                        usuarios.Add(usuario);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        usuario = usuJaAdicionado;
+                                                                    }
+
+                                                                    usuario.Enderecos.Add(enderecosEntrega);
+
+                                                                    return usuario; //Precisar retornar qq coisa, pode até ser um NULL
 
                                                                 }
+                                                                 ,new { Id = id }
+                                                               );
+            return usuarios.Take(1).SingleOrDefault();
 
-                                                                , new {Id = id}
-                                                                  
-                                                               
-                                                               ).SingleOrDefault();
+            
+
         }
 
         public void Insert(Usuario usuario)
