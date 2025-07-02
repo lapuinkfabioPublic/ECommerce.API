@@ -122,7 +122,13 @@ namespace ECommerce.API.Repositories
 
         public void Update(Usuario usuario)
         {
-            string sql = @"
+            _connection.Open();
+            var transaction = _connection.BeginTransaction();
+
+            try
+            {
+                #region Usuarios
+                string sql = @"
                            UPDATE [dbo].[Usuarios]
                            SET [Nome] = @Nome
                               ,[Email] = @Email
@@ -135,7 +141,46 @@ namespace ECommerce.API.Repositories
                             WHERE Id = @Id
                             ";
 
-            _connection.Execute(sql, usuario);
+                _connection.Execute(sql, usuario, transaction);
+
+                #endregion
+
+                if (usuario.contato == null)
+                    return;
+
+
+                string sqlContato = @" 
+                                    UPDATE [dbo].[Contatos]
+                                       SET 
+                                           [Telefone] = @Telefone
+                                          ,[Celular] = @Celular
+                                     WHERE id = @Id";
+
+                _connection.Execute(sqlContato, usuario.contato, transaction);
+
+                transaction.Commit();
+
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    transaction.Rollback();
+                }
+                catch (SystemException ex2)
+                {
+                    //Retornar para UsuarioController alguma mensagem
+                    throw ex2;
+
+                }
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+
+
         }
         public void Delete(int id)
         {
