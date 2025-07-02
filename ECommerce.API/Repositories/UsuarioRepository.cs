@@ -162,10 +162,6 @@ namespace ECommerce.API.Repositories
 
                 if (usuario.Departamentos != null && usuario.Departamentos.Count > 0)
                 {
-                    string sqlDeleteDepartamento = @"delete from  [dbo].[UsuariosDepartamentos]
-                                                       where [UsuarioId] =        @UsuarioId
-                                                ";
-                    _connection.Execute(sqlDeleteDepartamento, new { UsuarioId = usuario.Id }, transaction);
 
                     foreach (var departamento in usuario.Departamentos)
                     {
@@ -279,6 +275,29 @@ namespace ECommerce.API.Repositories
                         }
 
                     }
+                }
+
+                if (usuario.Departamentos != null && usuario.Departamentos.Count > 0)
+                {
+                    string sqlDeleteDepartamento = @"delete from  [dbo].[UsuariosDepartamentos]
+                                                       where [UsuarioId] =        @UsuarioId
+                                                ";
+                    _connection.Execute(sqlDeleteDepartamento, new { UsuarioId = usuario.Id }, transaction);
+
+                    foreach (var departamento in usuario.Departamentos)
+                    {
+
+                        string sqlInsertDepartamento = @"INSERT INTO [dbo].[UsuariosDepartamentos]
+                                                        ( [UsuarioId]
+                                                         ,[DepartamentoId])
+                                                          VALUES
+                                                         (@UsuarioId
+                                                        ,@DepartamentoId)
+                                                ";
+                        _connection.Execute(sqlInsertDepartamento, new { UsuarioId = usuario.Id, DepartamentoId = departamento.Id }, transaction);
+
+                    }
+
                 }
 
                 string sqlContato = @" 
