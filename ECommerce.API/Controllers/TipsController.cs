@@ -21,6 +21,7 @@ namespace ECommerce.API.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id) 
         { 
+            // + Pratico para Relatórios, mais o Modelo com Join é mais rápido.
             string sql = @"select [Id], [Nome], [Email], [Sexo], [RG], [CPF], [NomeMae], [SituacaoCadastro], [DataCadastro] from Usuarios where id=@Id; 
 
                          select [Id], [UsuarioId], [Telefone], [Celular] from Contatos where UsuarioId = @Id;
