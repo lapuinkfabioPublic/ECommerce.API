@@ -1,3 +1,6 @@
+using Dapper.FluentMap;
+using ECommerce.API.Mappers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -16,6 +19,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+FluentMapper.Initialize(config =>
+{
+    config.AddMap(new UsuarioTwoMap());
+});
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

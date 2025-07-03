@@ -64,5 +64,28 @@ namespace ECommerce.API.Controllers
             var usuario = _connection.Query<Usuario>("SelecionarUsuario", new { Id = id } , commandType: CommandType.StoredProcedure).SingleOrDefault();
             return Ok(usuario);
         }
+
+        [HttpGet("mapper/usuarios")]
+        public IActionResult Mapper()
+        {
+            //Solucao 1 usar um alias
+            var usuario = _connection.Query<UsuarioTwo>(@"select 
+                                            [Id] as Cod, [Nome] as NomeCompleto, [Email], [Sexo], [RG], [CPF], 
+                                            [NomeMae] as NomeCompletoMae, [SituacaoCadastro], [DataCadastro]
+                                            from Usuarios");
+            return Ok(usuario);
+        }
+
+
+        [HttpGet("mapper2/usuarios")]
+        public IActionResult Mapper2()
+        {
+            //Solucao 1 usar um alias
+            var usuario = _connection.Query<UsuarioTwo>(@"select 
+                                            [Id] , [Nome] , [Email], [Sexo], [RG], [CPF], 
+                                            [NomeMae] , [SituacaoCadastro], [DataCadastro]
+                                            from Usuarios");
+            return Ok(usuario);
+        }
     }
 }
