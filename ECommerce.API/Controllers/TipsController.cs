@@ -50,5 +50,22 @@ namespace ECommerce.API.Controllers
             }
             return NotFound();
         }
+
+        [HttpGet("stored/usuarios")]
+        public IActionResult StoredGet()
+        {
+            var usuarios = _connection.Query<Usuario>("SelecionarUsuarios", commandType: CommandType.StoredProcedure);
+             return Ok(usuarios);
+        }
+
+        [HttpGet("stored/usuario/{id}")]
+        public IActionResult StoredGet(int id)
+        {
+            var usuario = _connection.Query<Usuario>("SelecionarUsuario", new { Id = id } , commandType: CommandType.StoredProcedure).SingleOrDefault();
+            return Ok(usuario);
+        }
+
+        
+
     }
 }
