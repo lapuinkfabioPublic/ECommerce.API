@@ -64,8 +64,5 @@ namespace ECommerce.API.Controllers
             var usuario = _connection.Query<Usuario>("SelecionarUsuario", new { Id = id } , commandType: CommandType.StoredProcedure).SingleOrDefault();
             return Ok(usuario);
         }
-
-        
-
     }
 }
